@@ -1,13 +1,19 @@
 const { Router, response } = require("express");
 const { create } = require("../Database/Schemas/Recepti");
 const Recept = require("../Database/Schemas/Recepti");
-const User = require ("../Database/Schemas/User");
+const { authenticateToken } = require('../utils/passhash');
+
 const multer = require('multer')
 const router = Router();
 
-router.get("/", async (req, res) => {
-    const svi = await Recept.find({})
-    res.send(svi)
+
+
+router.get("/", [authenticateToken],  async (req, res) => {
+ 
+        const svi = await Recept.find({})
+        res.send(svi)
+
+    
 })
 
 

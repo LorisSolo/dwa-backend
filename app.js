@@ -13,16 +13,25 @@ const cookieSession = require('cookie-session')
 
 const app = express()
 const port = 3000
-const memoryStore  = new session.MemoryStore()
+
 
 app.use(cookieParser());
 
 
 
 app.use(cors({
-  credentials: true, 
+  credentials: true,
   origin: 'http://127.0.0.1:5173'
 }));
+
+/*
+Ako pvi cors ne radi
+app.use(cors({
+  credentials: true, 
+  origin: '*',
+  methods: '*',
+ }));
+*/
 
 app.use(bodyParser.json())
 
@@ -39,14 +48,6 @@ mongoose
 
 
 
-
-
-app.use(session({
-    secret:"AFJKAFVJHBAIUBFIGUVBSASKVBA",
-    resave: false,
-    saveUninitialized: false,
-    store: memoryStore
-}))
 
 
 app.use("/api/v1/auth",authRoute)

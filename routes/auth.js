@@ -2,10 +2,12 @@ const { Router, response, request } = require("express");
 const { create } = require("../Database/Schemas/User");
 const User = require("../Database/Schemas/User");
 const jwt = require('jsonwebtoken')
-const { passwordHash, comparePassword } = require('../utils/passhash');
+const { passwordHash, comparePassword, authenticateToken } = require('../utils/passhash');
 //const passport = require("passport");
 const { v4: uuidv4 } = require('uuid');
 const { Cookie } = require("express-session");
+const Recepti = require("../Database/Schemas/Recepti");
+require('dotenv').config()
 
 
 
@@ -16,25 +18,35 @@ const router = Router();
 
 
 router.post("/login", async (req, res) => {
-  console.log("pls")
-  const { email, password } = req.body
-  if (!email || !password) res.sendStatus(400)
-  let userDb = await User.findOne({ email })
-  if (!userDb) return res.sendStatus(401)
-  const isValid = comparePassword(password, userDb.password)
-  if (!isValid) {
-    console.log("kriva loz")
-    return res.sendStatus(401)
-  } else {
-    const token = jwt.sign({ _id: userDb._id }, 'secret')
-    res.cookie('jwt', token,
-      {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
-      })
+  try{
+    console.log("pls")
+    const { email, password } = req.body
+    if (!email || !password) res.status(400).send({'message':'Bad Request'})
+    let userDb = await User.findOne({ email })
+    if (!userDb) return res.status(401).send({'message':'Unauthorised'})
+    const isValid = comparePassword(password, userDb.password)
+    if (!isValid) {
+      console.log("kriva loz")
+      return res.status(401).send({'message':'Unauthorised'})
+    } else {
+      console.log("token")
+      const token = jwt.sign({ _id: userDb._id }, process.env.TOKEN_SECRET, {expiresIn: '60s' })
+      console.log(token)
+        
+      res.cookie('jwt', token,
+        {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000,
+          sameSite: "none", 
+          secure: true
+          })
+          
+      console.log("ajmoo")
+      res.status(200).send({'message':'OK'})
+    }
 
-    res.sendStatus(200)
-  }
+  }catch{(err)=>{console.log(err)}}
+
 
 
 })
@@ -52,17 +64,15 @@ router.post('/logout', (req, res) => {
 router.get("/user", async (req, res) => {
 
   try{
-
-  
   const cookie = req.cookies['jwt']
-
-  const claims = jwt.verify(cookie, 'secret')
+    console.log(cookie)
+  const claims = jwt.verify(cookie, process.env.TOKEN_SECRET)
 
   if (!claims) {
     return res.status(401).send({ message: 'anauthenticated' })
   }
   const userDb = await User.findOne({ _id: claims._id })
-  const { password, ...data } = await userDb.toJSON()
+  const { password, ...data } = userDb.toJSON()
   res.send(data)
 }catch (err){
   return res.status(401).send({ message: 'anauthenticated' })
@@ -70,18 +80,24 @@ router.get("/user", async (req, res) => {
 })
 
 
+router.get('/test',[authenticateToken],(req, res) => {
+
+    res.send('ok')
+  
+})
+
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body
   const userDb = await User.findOne({ email })
   if (userDb) {
     res.status(400).send({ msg: "User alredy exist" })
-    console.log('postoji')
+    console.log('User postoji')
   } else {
     const hashedPassword = passwordHash(password)
     //console.log(hashedPassword)
     const newUsere = await User.create({ username, email, password: hashedPassword })
     res.sendStatus(200)
-    console.log('kreiran')
+    console.log('User kreiran')
   }
 
 })
