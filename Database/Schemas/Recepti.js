@@ -6,7 +6,7 @@ const ReceptiSchema = new mongoose.Schema({
         require:true
     },
     ingredients:{
-        type: [String],
+        type: [mongoose.SchemaTypes.String],
         require:true
     },
     description:{

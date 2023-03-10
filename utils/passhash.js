@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const User = require('../Database/Schemas/User');
+const cookieParser = require('cookie-parser')
 
 function passwordHash (password){
     const salt = bcrypt.genSaltSync();
@@ -11,29 +13,50 @@ function comparePassword(raw, hash){
 
 
 
-function authenticateToken(req, res, next) {
-    try{
-        const cookie = req.cookies['jwt']
-        console.log(cookie)
-        if(!cookie){
-            res.json({'msg': 'nema cookiea'})
-        }
-        if(jwt.verify(cookie, process.env.TOKEN_SECRET)) {
-            console.log("dobar cookie")
-            next()
-        }
+async function authenticateToken(email, password) {
+    let userDb = await User.findOne({ email })
+    if (userDb && userDb.password && comparePassword(password, userDb.password)){
+        delete userDb.password
+        let token = jwt.sign({email: userDb.email}, process.env.TOKEN_SECRET, {algorithm: "HS512", expiresIn: "1week"} )
         
-    
+        return {
+            token,
+            email: userDb.email
 
-    }catch{(e)=> res.send(e)}
-    
+        } 
+        
+       
+    }else{
+        throw new Error ("Cannot authenticate")
+    }
+   
+      }
+
+   function verify(req, res, next){
+    try{
+        let authorization = req.headers.authorization.split(' ')
+        let type = authorization[0]
+        let token = authorization[1]
+        console.log(type, token)
+        console.log(req.headers.authorization);
+        if (type !== 'Bearer'){
+          res.status(401).send({msg: "nije bearer"})
+        }else{
+          req.jwt = jwt.verify(token, process.env.TOKEN_SECRET)
+          console.log('moze')
+          return next()
+        }
+    }catch(e){
+        res.status(401).send()
+
+   }
 }
-    
 
 
 
 module.exports = {
     passwordHash,
     comparePassword,
-    authenticateToken
+    authenticateToken,
+    verify
 }

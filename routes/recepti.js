@@ -1,17 +1,27 @@
 const { Router, response } = require("express");
 const { create } = require("../Database/Schemas/Recepti");
 const Recept = require("../Database/Schemas/Recepti");
-const { authenticateToken } = require('../utils/passhash');
+const { authenticateToken, verify } = require('../utils/passhash');
+const jwt = require('jsonwebtoken');
+const User = require("../Database/Schemas/User");
 
-const multer = require('multer')
+
+const multer = require('multer');
+const { use } = require("./auth");
 const router = Router();
 
 
 
-router.get("/", [authenticateToken],  async (req, res) => {
- 
-        const svi = await Recept.find({})
+router.get("/",  async (req, res) => {
+    
+      
+            
+         const svi = await Recept.find({})
         res.send(svi)
+        
+        
+ 
+        
 
     
 })
@@ -31,6 +41,62 @@ router.post('/dodajRecept', async (req, res) => {
     }
     
 })
+
+
+router.patch("/updateUser/:email", async (req, res) => {
+    try {
+      const result = await User.updateOne(
+        { email: req.params.email },
+        { $addToSet: { items: req.body.buttonValue } }
+      );
+      console.log(req.params.email);
+      res.send(result);
+    } catch (error) {
+      console.error(error);
+      res.send(error);
+    }
+  });
+
+
+  router.get('/getUserItems/:email', async (req, res) => {
+
+    const { email } = req.params
+
+    const userDb = await User.findOne({ email })
+    res.send(userDb.items)
+
+  })
+
+
+
+  
+
+  router.get('/getUserRecepti/:email', async (req, res) => {
+
+    
+      const { email }= req.params
+      const user = await User.findOne({ email });
+      const userItems = user.items;
+      console.log(userItems)
+      const recepti = await Recept.find({});
+      const matchedRecepti = [];
+      recepti.forEach((recept) => {
+          const { title, ingredients } = recept;
+          const matchedIngredients = userItems.filter((item) => ingredients.includes(item));
+          if (matchedIngredients.length > 3) {
+              matchedRecepti.push({ title, ingredients });
+          }
+      });
+      res.send(matchedRecepti);
+  });
+  
+
+  
+
+
+
+
+
 /*
 const Storage = multer.diskStorage({
     destination:'uploads',
