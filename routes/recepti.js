@@ -12,7 +12,7 @@ const router = Router();
 
 
 
-router.get("/",  async (req, res) => {
+router.get("/", verify, async (req, res) => {
     
       
             
@@ -27,10 +27,12 @@ router.get("/",  async (req, res) => {
 })
 
 
-router.post('/dodajRecept', async (req, res) => {
+router.post('/dodajRecept', verify,  async (req, res) => {
     const { title, ingredients, description } = req.body
     const recept = await Recept.findOne({ title })
     if (recept) {
+      console.log(recept)
+      console.log('postoji')
         res.status(400).send({ msg: "Recept alredy exist" })
     } else {
     
@@ -43,7 +45,7 @@ router.post('/dodajRecept', async (req, res) => {
 })
 
 
-router.patch("/updateUser/:email", async (req, res) => {
+router.patch("/updateUser/:email",    async (req, res) => {
     try {
       const result = await User.updateOne(
         { email: req.params.email },
@@ -58,12 +60,18 @@ router.patch("/updateUser/:email", async (req, res) => {
   });
 
 
-  router.get('/getUserItems/:email', async (req, res) => {
-
-    const { email } = req.params
+router.get('/getUserItems/:email', async (req, res) => {
+try{
+  const { email } = req.params
 
     const userDb = await User.findOne({ email })
     res.send(userDb.items)
+
+} catch (error)  {
+  console.error(error);
+  res.send(error);
+}
+    
 
   })
 
@@ -71,7 +79,7 @@ router.patch("/updateUser/:email", async (req, res) => {
 
   
 
-  router.get('/getUserRecepti/:email', async (req, res) => {
+  router.get('/getUserRecepti/:email',async (req, res) => {
 
     
       const { email }= req.params

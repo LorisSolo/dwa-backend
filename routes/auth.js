@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
     let result = await authenticateToken(userDb.email, userDb.password);
     
     
-    res.cookie("token", result.token, {
+    res.cookie('token', result.token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
       httpOnly: false, 
       secure: true, 
@@ -36,6 +36,13 @@ router.post("/login", async (req, res) => {
     res.status(403).json({ error: e.message });
   }
 });
+
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logout successful' });
+});
+
 
 
 router.get('/test1', verify,  (req, res) => {
