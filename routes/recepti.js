@@ -59,6 +59,21 @@ router.patch("/updateUser/:email",    async (req, res) => {
     }
   });
 
+  router.delete("/deleteItem/:email/:item", async (req, res) => {
+    try {
+      const result = await User.updateOne(
+        { email: req.params.email },
+        { $pull: { items: req.params.item } }
+      );
+      res.send(result);
+    } catch (error) {
+      console.error(error);
+      res.send(error);
+    }
+  });
+
+
+
 
 router.get('/getUserItems/:email', async (req, res) => {
 try{
