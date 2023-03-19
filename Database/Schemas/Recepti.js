@@ -13,6 +13,17 @@ const ReceptiSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.String,
         require: true
     },
+
+    picture: {
+        name: {
+            type: mongoose.SchemaTypes.String,
+        },
+        image: {
+            data: mongoose.SchemaTypes.Buffer,
+            contentType: mongoose.SchemaTypes.String
+        }
+    },
+    
     })
 
 module.exports = mongoose.model('recepti', ReceptiSchema)

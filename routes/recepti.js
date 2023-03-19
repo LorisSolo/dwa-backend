@@ -1,10 +1,9 @@
 const { Router, response } = require("express");
 const { create } = require("../Database/Schemas/Recepti");
 const Recept = require("../Database/Schemas/Recepti");
-const { authenticateToken, verify } = require('../utils/passhash');
+const { verify } = require('../utils/passhash');
 const jwt = require('jsonwebtoken');
 const User = require("../Database/Schemas/User");
-
 
 const multer = require('multer');
 const { use } = require("./auth");
@@ -18,13 +17,8 @@ router.get("/", verify, async (req, res) => {
             
          const svi = await Recept.find({})
         res.send(svi)
-        
-        
- 
-        
-
-    
-})
+                 
+    })
 
 
 router.post('/dodajRecept', verify,  async (req, res) => {
@@ -119,40 +113,5 @@ try{
 
 
 
-
-/*
-const Storage = multer.diskStorage({
-    destination:'uploads',
-    filename:(req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  });
-  const upload = multer({
-    storage:Storage
-  }).single('testImage')
-
-  router.get('/slika', (req,res) => {
-    res.send('upload file')
-  })
-
-router.post ('/upload', (req, res) => {
-    upload(req,res,(err) =>{
-        if (err) {
-            console.log(err)
-        }else{
-            const newImage = new ImageModel ({
-                //name: req.body.name,
-                image:{
-                    data:req.file.filename,
-                    contentType: 'image/png'
-                }
-            })
-            newImage.save()
-            .then (()=>res.send('successfully'))
-            .catch((err)=> console.log(err))
-        }
-    })
-})
-*/
 
 module.exports = router;

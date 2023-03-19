@@ -5,6 +5,7 @@ const session = require("express-session")
 const mongoose  = require("mongoose")
 const authRoute = require("./routes/auth")
 const receptiRoute = require("./routes/recepti");
+const imgRoute = require("./routes/imgUpload");
 const cookieParser = require('cookie-parser')
 const cookieSession = require('cookie-session')
 
@@ -44,6 +45,7 @@ mongoose
 
 app.use("/api/v1/auth",authRoute)
 app.use("/api/v1/recepti", receptiRoute)
+app.use("/api/v1/recepti", imgRoute)
 
 
 
