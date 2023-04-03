@@ -45,11 +45,6 @@ router.post('/logout', (req, res) => {
 
 
 
-router.get('/test1', verify,  (req, res) => {
-
-    res.json({message: 'Ovo je tajna'})
-  
-})
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body
@@ -59,21 +54,10 @@ router.post("/register", async (req, res) => {
     console.log('User postoji')
   } else {
     const hashedPassword = passwordHash(password)
-    //console.log(hashedPassword)
     const newUser = await User.create({ username, email, password: hashedPassword })
     res.status(200).send({msg: 'OK'})
     console.log('User kreiran')
   }
-
-})
-
-
-router.get('/getUser/:email', async (req, res) =>{
-
-  const { email } = req.params
-
-  const UserDb = await User.findOne( { email } )
-  res.send(UserDb)
 
 })
 

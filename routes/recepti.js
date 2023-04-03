@@ -21,11 +21,10 @@ router.get("/", verify, async (req, res) => {
     })
 
 
-router.post('/dodajRecept', verify,  async (req, res) => {
+router.post('/recipe', verify,  async (req, res) => {
     const { title, ingredients, description } = req.body
     const recept = await Recept.findOne({ title })
     if (recept) {
-      console.log(recept)
       console.log('postoji')
         res.status(400).send({ msg: "Recept alredy exist" })
     } else {
@@ -39,7 +38,7 @@ router.post('/dodajRecept', verify,  async (req, res) => {
 })
 
 
-router.patch("/updateUser/:email",    async (req, res) => {
+router.patch("/user/:email",    async (req, res) => {
     try {
       const result = await User.updateOne(
         { email: req.params.email },
@@ -53,7 +52,7 @@ router.patch("/updateUser/:email",    async (req, res) => {
     }
   });
 
-  router.delete("/deleteItem/:email/:item", async (req, res) => {
+  router.delete("/item/:email/:item", async (req, res) => {
     try {
       const result = await User.updateOne(
         { email: req.params.email },
@@ -69,7 +68,7 @@ router.patch("/updateUser/:email",    async (req, res) => {
 
 
 
-router.get('/getUserItems/:email', async (req, res) => {
+router.get('/userItems/:email', async (req, res) => {
 try{
   const { email } = req.params
 
@@ -88,7 +87,7 @@ try{
 
   
 
-  router.get('/getUserRecepti/:email',async (req, res) => {
+  router.get('/userRecipe/:email',async (req, res) => {
 
     
       const { email }= req.params
