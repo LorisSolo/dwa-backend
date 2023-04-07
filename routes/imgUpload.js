@@ -3,8 +3,10 @@ const router = express.Router();
 const sharp = require('sharp');
 const multer = require('multer');
 const fs = require("fs");
+const User = require('../Database/Schemas/User');
 const Recept = require("../Database/Schemas/Recepti");
-
+const Recepti = require('../Database/Schemas/Recepti');
+const { verify } = require('../utils/passhash');
 
 const Storage = multer.diskStorage({
     destination: 'temp',
@@ -15,10 +17,19 @@ const Storage = multer.diskStorage({
 
 const upload = multer({ storage: Storage }).single('picture');
 
-router.patch('/editPicture/:id', async (req, res) => {
+router.patch('/editPicture/:id', verify, async (req, res) => {
 
         let recept = await Recept.findOne({ _id: req.params.id })
         console.log(recept)
+        
+         if (req.user.email !== recept.userEmail) {
+            console.log(recept + "  req.user.email !== recept.userEmail ");
+            console.log(recept.userEmail, req.user.mail)
+            return res.sendStatus(403); 
+        
+    
+    }
+       
         upload(req, res, (err) => {
 
             try {

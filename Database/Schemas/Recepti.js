@@ -23,6 +23,11 @@ const ReceptiSchema = new mongoose.Schema({
             contentType: mongoose.SchemaTypes.String
         }
     },
+
+    userEmail:{
+        type: mongoose.SchemaTypes.String,
+        require: true
+    }
     
     })
 
