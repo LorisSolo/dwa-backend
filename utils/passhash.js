@@ -37,19 +37,13 @@ function verify(req, res, next) {
         let authorization = req.headers.authorization.split(' ')
         let type = authorization[0]
         let token = authorization[1]
-        console.log('authorization header:', req.headers.authorization)
-        console.log('type:', type)
-        console.log('token:', token)
-
 
         if (type !== 'Bearer') {
             res.status(401).send({ msg: "nije bearer" })
         } else {
 
             const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-            console.log('moze')
             req.user = decodedToken;
-            console.log('req.user:', req.user);
             return next()
 
         }

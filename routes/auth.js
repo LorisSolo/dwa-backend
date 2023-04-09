@@ -3,7 +3,6 @@ const { create } = require("../Database/Schemas/User");
 const User = require("../Database/Schemas/User");
 const jwt = require('jsonwebtoken')
 const { passwordHash,  authenticateToken, verify } = require('../utils/passhash');
-//const passport = require("passport");
 const { v4: uuidv4 } = require('uuid');
 const { Cookie } = require("express-session");
 const Recepti = require("../Database/Schemas/Recepti");
@@ -51,7 +50,6 @@ router.post("/register", async (req, res) => {
   const userDb = await User.findOne({ email })
   if (userDb) {
     res.status(400).send({ msg: "User alredy exist" })
-    console.log('User postoji')
   } else {
     const hashedPassword = passwordHash(password)
     const newUser = await User.create({ username, email, password: hashedPassword })

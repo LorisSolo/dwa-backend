@@ -25,14 +25,11 @@ router.post('/recipe', verify, async (req, res) => {
     const userEmail = req.user.email;
     const recept = await Recept.findOne({ title })
     if (recept) {
-      console.log('postoji')
-      res.status(400).send({ msg: "Recept alredy exist" })
+      res.status(400).send({ msg: "Recipe alredy exist" })
     } else {
 
       await Recept.create({ title, ingredients, description, userEmail })
       res.sendStatus(200)
-      console.log('recept kreiran')
-
     }
 
   } catch (err) { console.log(err) }
@@ -47,10 +44,8 @@ router.patch("/user/:email", async (req, res) => {
       { email: req.params.email },
       { $addToSet: { items: req.body.buttonValue } }
     );
-    console.log(req.params.email);
     res.send(result);
   } catch (error) {
-    console.error(error);
     res.send(error);
   }
 });
@@ -63,7 +58,6 @@ router.delete("/item/:email/:item", verify, async (req, res) => {
     );
     res.send(result);
   } catch (error) {
-    console.error(error);
     res.send(error);
   }
 });
@@ -76,9 +70,7 @@ router.get('/userItems/:email', verify, async (req, res) => {
     const { email } = req.params
 
     const userDb = await User.findOne({ email })
-    console.log("Funkcija pozvana")
     res.send(userDb.items)
-
   } catch (error) {
     console.error(error);
     res.send(error);
@@ -95,14 +87,13 @@ router.get('/userRecipe/:email', verify, async (req, res) => {
   const { email } = req.params
   const user = await User.findOne({ email });
   const userItems = user.items;
-  console.log(userItems)
   const recepti = await Recept.find({});
   const matchedRecepti = [];
   recepti.forEach((recept) => {
     const { title, ingredients } = recept;
     const matchedIngredients = userItems.filter((item) => ingredients.includes(item));
-    if (matchedIngredients.length > 3) {
-      matchedRecepti.push({ title, ingredients });
+    if (matchedIngredients.length === ingredients.length) {
+      matchedRecepti.push({ title });
     }
   });
   res.send(matchedRecepti);
