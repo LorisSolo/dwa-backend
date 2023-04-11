@@ -20,11 +20,8 @@ const upload = multer({ storage: Storage }).single('picture');
 router.patch('/editPicture/:id', verify, async (req, res) => {
 
         let recept = await Recept.findOne({ _id: req.params.id })
-        console.log(recept)
         
          if (req.user.email !== recept.userEmail) {
-            console.log(recept + "  req.user.email !== recept.userEmail ");
-            console.log(recept.userEmail, req.user.mail)
             return res.sendStatus(403); 
         
     
@@ -33,7 +30,7 @@ router.patch('/editPicture/:id', verify, async (req, res) => {
         upload(req, res, (err) => {
 
             try {
-                console.log(req.file.filename);
+
             } catch (e) { return res.sendStatus(406); }
 
             if (err) {

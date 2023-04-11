@@ -8,6 +8,7 @@ const receptiRoute = require("./routes/recepti");
 const imgRoute = require("./routes/imgUpload");
 const cookieParser = require('cookie-parser')
 const cookieSession = require('cookie-session')
+const userRoute = require("./routes/user");
 
 
 
@@ -43,9 +44,10 @@ mongoose
 
 
 
-app.use("/api/v1/auth",authRoute)
-app.use("/api/v1/recepti", receptiRoute)
-app.use("/api/v1/recepti", imgRoute)
+app.use("/api/auth",authRoute)
+app.use("/api/recipes", receptiRoute)
+app.use("/api/users", userRoute)
+app.use("/api/recipes", imgRoute)
 
 
 
